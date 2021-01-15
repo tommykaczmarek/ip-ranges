@@ -2,20 +2,33 @@ package com.losmotylos.ip.ranges
 
 import com.risksense.ipaddr.{IpAddress, IpRange, IpSet}
 
+import scala.util.{Failure, Success, Try}
+
+
 case class IpRange2(from: String, to: String)
+case class IpRange2ValidationError(error: String, improperRanges: Seq[IpRange2])
 
 object IpRanges {
-
   /**
    * Returns mutually exclusive ranges basing on input ranges in IPv4.
-   * @throws RuntimeException when any of the range is not contiguous
+   *
+   * @return
+   * - Error record for improper IP ranges
+   * - ranges that are mutually exclusive
    **/
-  def symmetricDifference(input: Seq[IpRange2]): Seq[IpRange2] = {
-    // todo add checking if ips are correct and contiguous
+  def symmetricDifference(input: Seq[IpRange2]): Either[IpRange2ValidationError, Seq[IpRange2]] = {
+    validateRanges(input) match {
+      case Left(v) => Left(v)
+      case Right(symmetricDiffRanges) =>
+        Right(symmetricDifferenceOnContiguousIpRanges(symmetricDiffRanges)
+          .map(r => IpRange2(IpAddress(r.first).toString, IpAddress(r.last).toString)
+        ))
+    }
+  }
 
+  private def symmetricDifferenceOnContiguousIpRanges(input: Seq[IpRange]): Seq[IpRange] = {
     val inputRanges =
       input
-        .map(range => IpRange(range.from, range.to))
         .map(IpSet(_))
 
     val symmetricDiffInput = inputRanges.reduceLeft((a, b) => a ^ b)
@@ -32,17 +45,19 @@ object IpRanges {
 
     val symmetricDiff = symmetricDiffInput ^ symmetricDiffIntersections
 
-    val symmetricDiffRanges =
-      symmetricDiff
-        .networkSeq
-        .sorted
-        .map(n => IpRange(IpAddress(n.first).toString, IpAddress(n.last).toString))
-        .map(Seq(_))
-        .reduceLeft((a, b) => join(a, b))
+    symmetricDiff
+      .networkSeq
+      .sorted
+      .map(n => IpRange(IpAddress(n.first).toString, IpAddress(n.last).toString))
+      .map(Seq(_))
+      .reduceLeft((a, b) => join(a, b))
+  }
 
-    symmetricDiffRanges.map(r =>
-      IpRange2(IpAddress(r.first).toString, IpAddress(r.last).toString)
-    )
+  private def validateRanges(addresses: Seq[IpRange2]): Either[IpRange2ValidationError, Seq[IpRange]] = {
+    Try(addresses.map(range => IpRange(range.from, range.to))) match {
+      case Success(value) => Right(value) // todo add validateContiguous
+      case Failure(_) => Left(IpRange2ValidationError("Failed to parse IpAddress", addresses))
+    }
   }
 
   /**

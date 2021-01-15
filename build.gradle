@@ -24,13 +24,12 @@ dependencies {
     implementation 'org.apache.spark:spark-sql_2.12:3.0.0'
     implementation 'commons-net:commons-net:3.7.2'
     implementation 'com.risksense:ipaddr_2.12:1.0.2'
-
-
-    testImplementation 'io.github.embeddedkafka:embedded-kafka_2.12:2.6.0'
+    implementation 'org.apache.logging.log4j:log4j-api-scala_2.12:11.0'
 
     // Use Scalatest for testing our library
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.scalatest:scalatest_2.12:3.0.5'
+    testImplementation 'org.scalacheck:scalacheck_2.12:1.15.2'
 
     // Need scala-xml at test runtime
     testRuntimeOnly 'org.scala-lang.modules:scala-xml_2.12:1.1.1'
