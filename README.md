@@ -1,8 +1,8 @@
 # Ip ranges  
-### Utilities for processing set of ip addresses ranges finding and removing their intersections.
+## Utilities for processing set of ip addresses ranges finding and removing their intersections.
 Returns set of mutually exclusive ip addresses - symmetric difference
 
-### Requirements:
+## Requirements:
 - ip range must be proper IPv4 format
   ```
   192.160.1.100
@@ -16,7 +16,7 @@ Returns set of mutually exclusive ip addresses - symmetric difference
   192.168.0.0 - 10.1.233.101  
   ``` 
 
-#### Ip ranges library
+## Ip ranges library
 Takes ip ranges as input, perform validation and returns symmetric difference
 Example:
 For following ip ranges:
@@ -40,7 +40,7 @@ it returns
 com.losmotylos.ip.ranges.IpRangesTest
     
 
-#### Ip ranges spark application 
+## Ip ranges spark application 
 # Takes ip ranges with associated URI, returns symmetric difference with URI
 
    Input
